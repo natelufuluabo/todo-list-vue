@@ -4,23 +4,24 @@
     <h2>({{nbItemsToBuy}} articles)</h2>
   </header>
   <main>
-    <button v-if="editing" @click="doEdit(false)" class="btn btn-cancel">as;jaehvasdnasdkadhjf</button>
+    <button v-if="editing" @click="doEdit(false)" class="btn btn-cancel">Annuler</button>
     <button v-else @click="doEdit(true)" class="btn btn-primry">Ajouter un article</button>
 
     <div v-if="editing" class="add-item-form">
       <input @keyup.enter="saveItem" type="text" v-model="newItem" placeholder="Ajout d'un article">
       <label>
-        <input type="input" v-model="newItemHighPriority">
+        <input type="checkbox" v-model="newItemHighPriority">
         Haute Priorité
       </label>
       <button @click="saveItem" class="btn btn-primary">
         Enregistrer
       </button>
     </div>
-    <!-- <p v-if="items.length === 0">Panier vide.</p> TODO: Corriger ici pour que si tout est acheté cette balise s'affiche -->
+    <p v-if="nbItemsToBuy === 0">Panier vide.</p> 
     <ul>
       <li v-for="item in items" @click="togglePurchased(item)" :key="item.id_" class="static-class"
-        :class="{ strikeout: item.purchased, priority: item.highPriority }">
+        :class="{ strikeout: item.purchased, priority: item.highPriority }"
+        >
         {{ item.label }}
       </li>
     </ul>
@@ -30,7 +31,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
-const header = undefined // votre titre ici
+const header = 'Liste d\'epicerie'
 const items = reactive([
   { id: 1, label: '🍎 Pommes', purchased: false, highPriority: false },
   { id: 2, label: '🥦 Brocoli', purchased: false, highPriority: false },
@@ -46,26 +47,28 @@ const nbItemsToBuy = computed(()=>items.length-nbItemsPurchased.value);
 
 
 function saveItem() {
-  items.push({
-    id: items.length , //FIXME: changer l'index pour qu'il démarre à 1
-    label: newItem,
+  items.value = items.push({
+    id: items.length + 1, //FIXME: changer l'index pour qu'il démarre à 1
+    label: newItem.value,
     purchased: false,
     highPriority: newItemHighPriority.value
   })
 
-  //newItem.value = ""
-  newItemHighPriority.value = "allo"
+  console.log(items)
+
+  newItem.value = ""
+  newItemHighPriority.value = false
 }
 
 function doEdit(startEditing) {
   editing.value = startEditing
-  newItem.value = items[0].label
-  newItemHighPriority.value = true
+  newItem.value = ''
+  newItemHighPriority.value = false
 }
 
 function togglePurchased(item) {
   console.log("DB01: item clicked ans purchased ", item.purchased)
-  item.purchased = item.purchased
+  item.purchased = !item.purchased
 }
 
 </script>
