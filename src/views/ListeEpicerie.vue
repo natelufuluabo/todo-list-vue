@@ -19,10 +19,11 @@
     </div>
     <p v-if="nbItemsToBuy === 0">Panier vide.</p> 
     <ul>
-      <li v-for="item in items" @click="togglePurchased(item)" :key="item.id_" class="static-class"
+      <li v-for="item in items" :key="item.id_" class="static-class"
         :class="{ strikeout: item.purchased, priority: item.highPriority }"
         >
-        {{ item.label }}
+        <span @click="togglePurchased(item)">{{ item.label }}</span>
+        <button @click="$event => deleteItem(item.id)"><i class="fa-solid fa-trash"></i></button>
       </li>
     </ul>
   </main>
@@ -31,7 +32,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
-const header = 'Liste d\'epicerie'
+const header = 'Liste d\'épicerie'
 const items = reactive([
   { id: 1, label: '🍎 Pommes', purchased: false, highPriority: false },
   { id: 2, label: '🥦 Brocoli', purchased: false, highPriority: false },
@@ -47,14 +48,12 @@ const nbItemsToBuy = computed(()=>items.length-nbItemsPurchased.value);
 
 
 function saveItem() {
-  items.value = items.push({
-    id: items.length + 1, //FIXME: changer l'index pour qu'il démarre à 1
+  items.push({
+    id: items.length + 1,
     label: newItem.value,
     purchased: false,
     highPriority: newItemHighPriority.value
   })
-
-  console.log(items)
 
   newItem.value = ""
   newItemHighPriority.value = false
@@ -69,6 +68,13 @@ function doEdit(startEditing) {
 function togglePurchased(item) {
   console.log("DB01: item clicked ans purchased ", item.purchased)
   item.purchased = !item.purchased
+}
+
+function deleteItem(id) {
+  const indexToRemove = items.findIndex(item => item.id === id);
+  if (indexToRemove !== -1) {
+    items.splice(indexToRemove, 1);
+  }
 }
 
 </script>
@@ -86,6 +92,17 @@ body {
   justify-content: center;
   margin: 0;
   padding: 0;
+}
+
+button {
+  display: flex;
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  color: red;
 }
 
 #shopping-list {
@@ -111,6 +128,11 @@ p {
   font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.1s ease-in;
+}
+
+li {
+  display: grid;
+  grid-template-columns: 1fr .5fr;
 }
 
 li:hover {
