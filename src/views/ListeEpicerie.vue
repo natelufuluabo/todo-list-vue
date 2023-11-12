@@ -1,7 +1,8 @@
 <template>
   <header>
     <h1>{{ header || 'Welcome' }}</h1>
-    <h2>({{nbItemsToBuy}} articles)</h2>
+    <h2>{{nbItemsToBuy}} {{ nbItemsToBuy > 1 ? 'articles' : 'article' }} à acheter</h2>
+    <h2>{{nbItemsPurchased}} {{ nbItemsPurchased > 1 ? 'articles achetés' : 'article acheté' }}</h2>
   </header>
   <main>
     <button v-if="editing" @click="doEdit(false)" class="btn btn-cancel">Annuler</button>
@@ -32,7 +33,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
-const header = 'Liste d\'épicerie'
+const header = '🥦🍎🥬🍊 Liste d\'épicerie 🥦🍎🥬🍊'
 const items = reactive([
   { id: 1, label: '🍎 Pommes', purchased: false, highPriority: false },
   { id: 2, label: '🥦 Brocoli', purchased: false, highPriority: false },
@@ -48,6 +49,7 @@ const nbItemsToBuy = computed(()=>items.length-nbItemsPurchased.value);
 
 
 function saveItem() {
+  if (!newItem.value) return // Empêche l'utilisateur d'ajouter un article sans nom
   items.push({
     id: items.length + 1,
     label: newItem.value,
